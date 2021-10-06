@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hamburger</title>
+    <link rel="stylesheet" href="hamburger.css">
+</head>
+
+<body>
+    <main class="container">
+        <h3>Сделай свой бургер</h3>
+        <div>
+            <fieldset class="size">
+                <legend>Размер</legend>
+                <input id="smallb" type="radio" name="size" value="small" data-price="50" data-calories="20"
+                    class="menu" checked>
+                <label for="smallb">Маленький (50 рублей, 20 калорий)</label><br />
+                <input id="bigb" type="radio" name="size" value="big" data-price="100" data-calories="40" class="menu">
+                <label for="bigb">Большой (100 рублей, 40 калорий)</label>
+            </fieldset>
+        </div>
+        <div>
+            <fieldset class="size">
+                <legend>Начинка</legend>
+                <input id="cheese" type="checkbox" name="add" value="cheese" data-price="10" data-calories="20"
+                    class="menu" checked>
+                <label for="cheese">Сыр (+10 рублей, +20 калорий)</label><br />
+                <input id="salad" type="checkbox" name="add" value="salad" data-price="20" data-calories="5"
+                    class="menu">
+                <label for="salad">Салат (+20 рублей, +5 калорий)</label><br />
+                <input id="potato" type="checkbox" name="add" value="potato" data-price="15" data-calories="10"
+                    class="menu">
+                <label for="potato">Картофель (+15 рублей, +10 калорий)</label>
+            </fieldset>
+        </div>
+        <div>
+            <fieldset class="size">
+                <legend>Добавки</legend>
+                <input id="mayonnaise" type="checkbox" name="toppings" value="mayonnaise" data-price="20"
+                    data-calories="15" class="menu" checked>
+                <label for="mayonnaise">Майонез (+20 рублей, +15 калорий)</label><br />
+                <input id="tomato" type="checkbox" name="toppings" value="spicy" data-price="5" data-calories="10"
+                    class="menu">
+                <label for="tomato">Кетчуп (5 рублей, +10 калорий)</label><br />
+                <input id="spicy" type="checkbox" name="toppings" value="spicy" data-price="15" data-calories="0"
+                    class="menu">
+                <label for="spicy">Приправы (+15 рублей, +0 калорий)</label>
+            </fieldset>
+        </div>
+        <div>
+            <fieldset class="size">
+                <legend>Покупка</legend>
+                <label>
+                    <button id="by-btn" type="button">Расчитать</button>
+                </label>
+                <p id="total">Цена: <span id="price">0</span> рублей</p>
+                <p>Калории: <span id="calories">0</span></p>
+            </fieldset>
+        </div>
+    </main>
+    <script src="hamburger.js"></script>
+</body>
+
+</html>
