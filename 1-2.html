@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>lesson4-1-2</title>
+</head>
+<body>
+  <p id="text">
+    "Дан большой текст, aren't в котором для оформления 'прямой речи используются одинарные кавычки'.
+     Придумать шаблон, который заменяет 'одинарные кавычки' на двойные."
+  </p>
+  <button id="replace">Replace</button>
+
+<script>
+  let txt = document.getElementById('text');
+  document.getElementById('replace').addEventListener('click', () => {
+    txt.textContent = txt.textContent.replace(/\B'|'\B/g, '"')
+  })
+</script>
+</body>
+</html>

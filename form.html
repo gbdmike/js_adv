@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>form2</title>
+    <link rel="stylesheet" href="form.css">
+</head>
+
+<body>
+    <form novalidate>
+        <div>
+            <label for="name">
+                <span>Please enter yor name:</span>
+                <input type="text" id="name" name="name">
+                <span class="error" aria-live="polite"></span>
+            </label>
+        </div>
+        <div>
+            <label for="phone">
+                <span>Please enter yor phone:</span>
+                <input type="tel" id="phone" name="phone">
+                <span class="error" aria-live="polite"></span>
+            </label>
+        </div>
+        <div>
+            <label for="mail">
+                <span>Please enter your email:</span>
+                <input type="email" id="mail" name="mail" required minlength="8">
+                <span class="error" aria-live="polite"></span>
+            </label>
+        </div>
+        <button>Submit</button>
+    </form>
+    <script src="form.js"></script>
+</body>
+
+</html>
