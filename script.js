@@ -1,209 +1,179 @@
-const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/'
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/';
 
-function send(onError, onSuccess, url, method = 'GET', data = null, headers = [], timeout = 60000) {
-  let xhr;
+Vue.component('good-item', {
+  template: `<div class="goods-item">
+    <h2>{{ title }}</h2>
+    <p>{{ price }} $</p>
+    <img class="goods-photo" :src="img" alt="image">
+    <button class="by-btn" v-on:click="onClick">Купить</button>
+    </div>`,
 
-  if (window.XMLHttpRequest) {
-    // Chrome, Mozilla, Opera, Safari
-    xhr = new XMLHttpRequest();
-  } else if (window.ActiveXObject) {
-    // Internet Explorer
-    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+  data() {
+    return {
+      cartGoods: []
+    }
+  },
+
+  methods: {
+    onClick() {
+      this.$emit('addproduct', this.cartGoods)
+    }
+  },
+
+  props: {
+    title: String,
+    price: Number,
+    img: String
   }
 
-  xhr.open(method, url, true);
+})
 
+Vue.component('goods-list', {
+  template: `<div class="goods-list">
+  <good-item
+  v-for="good of list"
+  v-bind:key="good.id_product"
+  v-bind:title="good.product_name"
+  v-bind:price="good.price"
+  :img="img"
+  v-on:addproduct="$emit(addGoods)">
+</good-item>
+</div>`,
+  props: {
+    list: Array,
+    img: String
+  }
+})
 
-  headers.forEach((header) => {
-    xhr.setRequestHeader(header.key, header.value);
-  })
-
-
-  xhr.timeout = timeout;
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      if (xhr.status >= 400) {
-        onError(xhr.statusText)
-      } else {
-        onSuccess(xhr.responseText)
-      }
+Vue.component('search', {
+  template: `<div class="search">
+    <form action="#" class="search-inp" @submit.prevent="submitPrevent">
+      <input type="text" class="goods-search" placeholder="Введите название" v-model="searchLine">
+      <button class="search-button" type="submit">Искать</button>
+    </form>
+   </div>`,
+  data() {
+    return {
+      searchLine: ''
+    }
+  },
+  methods: {
+    submitPrevent() {
+      this.$emit('search', this.searchLine)
     }
   }
+})
 
-  xhr.send(data);
-}
-
-
-// Создаем класс для товара
-class GoodsItem {
-  constructor(element, photo = 'https://placehold.it/200x150') {
-    this.product_name = element.product_name;
-    this.price = element.price;
-    this.id_product = element.id_product;
-    this.photo = photo;
+Vue.component('cart', {
+  template: `<div class="cart-block" v-show="showCart">
+    <p v-if="!goods.length">Корзина пуста</p>
+    <cart-item class="cart-item"
+      v-for="item of goods"
+      v-bind:key="item.id_product"
+      v-bind:cart-item="item"
+      :src="img">
+    </cart-item>
+  </div>`,
+  props: {
+    goods: Array,
+    img: String, //если указываю Image, выдает ошибку img undefined but got String
+    show: Boolean
   }
+})
 
-  //Метод возвращает html-разметку
-  render() {
-    return `<div class="goods-item" data-id="${this.id_product}">
-                <h3>${this.product_name}</h3>
-                <p>${this.price}</p>
-                <img class="goods-photo" src="${this.photo}">
-                <button class="by-btn" data-id="${this.id_product}"
-                data-name="${this.product_name}"
-                data-price="${this.price}">Добавить</button>
-              </div>`;
-  }
-}
-
-//Создаем класс списка товаров с пустым массивом
-class GoodsList {
-  constructor() {
-    this.goods = [];
-  }
-
-  //Метод для заполнения списка товаров GoodsList
-  fetchGoods() {
-    new Promise((resolve, reject) => {
-      send(reject, resolve, `${API_URL}catalogData.json`)
-    })
-      .then((request) => {
-        this.goods = JSON.parse(request).map(good => ({ id_product: good.id_product, product_name: good.product_name, price: good.price }))
-        this.render();
-      })
-      .catch((err) => {
-        console.log(err.txt)
-      })
-  }
-
-  //Метод вывода списка товаров
-  render() {
-    let listHtml = '';
-    this.goods.forEach(good => {
-      const goodItem = new GoodsItem({ id_product: good.id_product, product_name: good.product_name, price: good.price });
-      listHtml += goodItem.render();
-    });
-    document.querySelector('.goods-list').innerHTML = listHtml;
-  }
-
-  //Метод вывода суммы всех товаров
-  sumGoodsList() {
-    let initialValue = 0;
-    let total = this.goods.reduce((previousValue, currentValue) =>
-      previousValue + currentValue.good.price, initialValue)
-
-    let sum = document.getElementById('sum');
-    document.getElementById('sum').innerHTML = total;
-    sum.innerText = (`Сумма товаров равна ${total}`);
-  }
-}
-
-//Класс для корзины товаров
-class CartItem {
-  constructor(product, photo = 'https://placehold.it/50x100') {
-    this.title = product.title;
-    this.price = product.price;
-    this.photo = photo;
-    this.quantity = 1;
-  }
-
-  //Метод возвращает отрисовку корзины
-  renderCart() {
-    return `<div class="cart-item" data-id="${this.id_product}">
-            <div class="product-bio">
-            <img src="${this.photo}" alt="Some image">
-            <div class="product-desc">
-            <p class="product-title">${this.product_name}</p>
-            <p class="product-quantity">Quantity: ${this.quantity}</p>
-        <p class="product-single-price">$${this.price} each</p>
-        </div>
+Vue.component('cart-item', {
+  template: `<div class="cart-item">
+        <div class="product-bio">
+          <img class="img-small" :img="img" alt="Some image">
+          <div class="product-desc">
+            <p class="product-title">{{ card.product_name }}</p>
+            <p class="product-quantity">Количество: {{ card.quantity }}</p>
+            <p class="product-single-price">$ {{ card.price }}</p>
+          </div>
         </div>
         <div class="right-block">
-            <p class="product-price">$${this.quantity * this.price}</p>
-            <button class="del-btn" data-id="${this.id_product}">&times;</button>
+          <p class="product-price">{{ card.quantity*card.price }}</p>
+          <button class="del-btn" @click="('removeCart', item)">&times;</button>
         </div>
-        <p class="cart-total"></p>
-        </div>`
+      </div>`,
+  props: {
+    card: Array,
+    img: String
   }
+})
+new Vue({
+  //передаем объект с настройками
+  el: "#app",
+  data: {
+    goods: [], //исходныый список товаров
+    cartGoods: [], //корзина с товарами
+    showCart: false, //показать/скрыть корзину
+    filteredGoods: [], //список товаров после фильтрации
+    imgCatalog: 'https://formaoxrany.ru/img/goods/nophoto.jpg', //картинка карточки товара большая
+    imgCart: 'https://formaoxrany.ru/img/goods/nophoto.jpg', //картинка карточки товара в корзине
+    // searchLine: '' //содержимое поля поиска
+  },
+  //Раздел c методами
+  methods: {
+    loadgoods() {
+      //вызываем метод fetch и передаем URL и catalogData.json
+      //fetch возвращает promise
+      fetch(`${API_URL}catalogData.json`)
+        // распарсим JSON-строку, которая к нам придет
+        //request.json тоже возвращает promise, поэтому делаем
+        //второй блок .then
+        .then((request) => request.json())
+        //приходят данные, которые распарсили из JSON-строки
+        //и их нужно поместить в this.goods и filtered.goods
+        .then((data) => {
+          this.goods = data;
+          this.filteredGoods = data;
+        })
+    },
 
-  //Увеличиваем кол-во товара на 1
-  addQuantity() {
-    this.quantity += 1;
+    //метод добавления кол-ва, товара в корзину
+    addGoods(good) {
+      fetch(`${API_URL}addToBasket.json`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.result === 1) {
+            let find = this.cartGoods.find(el => el.id_product === good.id_product);
+            if (find) {
+              find.quantity++;
+            } else {
+              let prod = Object.assign({ quantity: 1 }, good);
+              this.cartGoods.push(prod)
+            }
+          } else {
+            alert('Error');
+          }
+        })
+    },
+
+    //метод удаления кол-ва, товара из корзины
+    removeCart(item) {
+      fetch(`${API_URL}deleteFromBasket.json`)
+        .then((request) => request.json())
+        .then((data) => {
+          if (data.result === 1) {
+            if (item.quantity > 1) {
+              item.quantity--;
+            } else {
+              this.cartGoods.splice(this.cartGoods.indexOf(item), 1)
+            }
+          }
+        })
+    },
+
+    // поиск товара
+    filter(searchLine) {
+      let regexp = new RegExp(searchLine, 'i');
+      this.filteredGoods = this.goods.filter(el => regexp.test(el.product_name));
+    },
+  },
+
+  //функция вызывается при загрузке приложения для инициализации
+  mounted() {
+    this.loadgoods();
   }
-}
-
-class Cart {
-  fetchCart() {
-    send(
-      (err) => {
-        console.log(err.txt)
-      },
-      (request) => {
-        this.goods = JSON.parse(request)
-        this.render();
-      },
-      `${API_URL}/addToBasket.json`
-    )
-  }
-
-  render() {
-    let listHtml = '';
-    let goodsList = document.getElementsByClassName('cart-block');
-
-    this.goods.forEach((CartItem, indexOfProduct) => {
-      listHtml += CartItem.renderCart(indexOfProduct);
-    });
-    goodsList.innerHTML = listHtml;
-    this.sumCart();
-  }
-
-  //Добавление товара в корзину
-  addCartItem(product) {
-    
-    let cartItem = this.goods[0];
-
-    if (cartItem != undefined) {
-      cartItem.addQuantity();
-    } else {
-      let item = new CartItem(product);
-      this.goods.push(item);
-    }
-  }
-
-  //Метод для вывода суммы корзины
-  sumCart() {
-    let sumPrice = document.getElementsByClassName('cart-total');
-    let sum = 0;
-    this.goods.forEach(good => {
-      sum += good.price * good.quantity;
-    });
-    sumPrice.innerText = `Итого ${sum} рублей`;
-  }
-
-  //Удаление товара
-  removeCartItem(index) {
-    delBasket(`${API_URL}/deleteFromBasket.json`, (goods) => {
-      this.goods = JSON.parse(goods);
-    })
-    this.goods.splice(index, 1);
-    document.querySelector(`.cart-item[data-id="${productId}"]`).remove();
-    this.render();
-  }
-}
-
-
-let cart = new Cart();
-new GoodsList(cart);
-
-
-
-
-
-
-
-//Чтобы вывести список, нужно создать экземпляр класса GoodsList, вызвать для него метод fetchGoods,
-// чтобы записать список товаров в свойство goods, и вызвать render()
-const list = new GoodsList();
-list.fetchGoods();
-list.sumGoodsList();
+})
