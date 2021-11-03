@@ -1,0 +1,50 @@
+[
+    {
+      "id_product": 123,
+      "img": "prd1.jpg",
+      "product_name": "Mango T-Shirt",
+      "price": 52
+    },
+    {
+      "id_product": 456,
+      "img": "prd2.jpg",
+      "product_name": "Mango Top",
+      "price": 25
+    },
+    {
+        "id_product": 789,
+        "img": "prd3.jpg",
+        "product_name": "Mango Jacket",
+        "price": 38
+      },
+      {
+        "id_product": 112,
+        "img": "prd4.jpg",
+        "product_name": "Mango Dress Flower",
+        "price": 45
+      },
+      {
+        "id_product": 345,
+        "img": "prd5.jpg",
+        "product_name": "Mango Blouse",
+        "price": 73
+      },
+      {
+        "id_product": 678,
+        "img": "prd6.jpg",
+        "product_name": "Mango Blazer",
+        "price": 11
+      },
+      {
+          "id_product": 901,
+          "img": "prd7.jpg",
+          "product_name": "Mango Pants",
+          "price": 95
+        },
+        {
+          "id_product": 234,
+          "img": "prd8.jpg",
+          "product_name": "Mango Sweatshirt",
+          "price": 8
+        }
+  ]
